@@ -10,5 +10,4 @@ end
 return {
 	startupSplash = startupSplash,
 	startLoop = startLoop,
-	wait_for_input = wait_for_input
 }

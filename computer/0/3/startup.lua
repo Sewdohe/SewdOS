@@ -14,7 +14,7 @@ while true do
     if message == "FrontGate:toggle" then
         print("toggle door and reply on channel" .. replyChannel)
         rs.setOutput("bottom", not rs.getOutput("bottom"))
-        modem.transmit(command_port, listen_port, rs.getOutput("bottom"))
+          
     elseif message == "FrontGate:state" then
         print("reply on channel " .. replyChannel)
         modem.transmit(command_port, listen_port, rs.getOutput("bottom"))

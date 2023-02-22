@@ -31,7 +31,6 @@ function getState()
 end
 
 function sayStatus(status)
-  print(status)
 	if status == true then
 		return "Open"
 	else 

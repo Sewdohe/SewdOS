@@ -4,4 +4,3 @@ local rendering = require("OS.rendering")
 
 rendering.startupSplash()
 os.startLoop()
-os.wait_for_input()

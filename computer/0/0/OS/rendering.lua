@@ -41,7 +41,6 @@ local function centerPrint(text, lineNum, color)
 end
 
 function sayStatus(status)
-  print(status)
 	if status == true then
 		return "Open"
 	else 
@@ -113,12 +112,12 @@ function draw_menu()
       table.insert(clickIndexes, { line = line, index = optionIndex })
     end
 
-    menuDrawn = true
     -- iterate the optionIndex so the next line has the correct index
     optionIndex = optionIndex + 1
     draw_taskbar()
-    -- wait_for_input()
   end
+  menuDrawn = true
+  wait_for_input()
 end
 
 function clear()
@@ -194,11 +193,11 @@ end
 
 function log(message)
   setTextColor(colors.white)
-  centerPrint(message, height - 2, colors.yellow)
+  centerPrint(message, height - 3, colors.yellow)
 end
 
 function wait_for_input()
-  log("Click a line to toggle it's status")
+  print("listening for input")
 	-- Event loop
 	while true do
 		-- get event data
@@ -209,8 +208,11 @@ function wait_for_input()
         -- and if it does we execute it's function
         -- then we re-draw the menu with the new data
         if (cy == ci["line"]) then
-          print("new status : " .. sayStatus(data.menu[ci["index"]].func()))
-          data.menu[ci["index"]].state = sayStatus(data.menu[ci["index"]].func())
+          print(data.menu[ci["index"]].title)
+          -- print("new state: " .. sayStatus(data.menu[ci["index"]].func()) .. data.menu[ci["index"]].func())
+          local new_state = data.menu[ci["index"]].func()
+          data.menu[ci["index"]].state = new_state
+          print("new state: " .. data.menu[ci["index"]].state)
           draw_menu()
         end
         if cy == height then
