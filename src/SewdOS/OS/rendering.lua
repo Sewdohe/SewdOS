@@ -1,7 +1,13 @@
-local data = require("OS.data")
+local debug = require("SewdOS.OS.debug")
+
+debug.log("start rendering...")
+
+debug.log("request menu data")
+local data = require("SewdOS.OS.data")
 
 -- periphemu.create("rightw", "monitor")
 
+debug.log("init render variables")
 local clickIndexes = {}
 local menuStartLine = 6
 local nextDraw = 0
@@ -11,8 +17,10 @@ local menuDrawn = false
 local monitor, width, height
 local screen
 
+debug.log("searching for peripherals...")
 local monitor = peripheral.find("monitor")
 
+debug.log("determining display mode...")
 local termMode
 if monitor == nil then
   termMode = true
@@ -23,6 +31,7 @@ else
   screen = peripheral.find("monitor")
   width, height = monitor.getSize()
 end
+debug.log("Os terminal mode: " .. tostring(termMode))
 
 local function centerPrint(text, lineNum, color)
   local text_len = string.len(text)
@@ -40,36 +49,31 @@ local function centerPrint(text, lineNum, color)
   screen.write(text)
 end
 
-function sayStatus(status)
-	if status == true then
-		return "Open"
-	else 
-		return "Closed"
-	end
-end
 
 local function loadingBar(line, color, time)
+  debug.log("drawing loading bar")
   local loadingString = ""
   local barGrain = 12
   local tickTime = time / barGrain
   local tickTimes = 0
   local event, id
-  
-  while(tickTimes < barGrain) do
+
+  while (tickTimes < barGrain) do
     local timer = os.startTimer(tickTime)
     repeat
       event, id = os.pullEvent("timer")
     until id == timer
-    
+
     loadingString = loadingString .. "#"
     tickTimes = tickTimes + 1
-    
+
     setTextColor(color)
     centerPrint(loadingString, 8, color)
-    end
+  end
 end
 
 function draw_menu()
+  debug.log("starting menu draw")
   -- reset counting vars for menu redraw
   if (menuDrawn) then
     menuStartLine = 6
@@ -90,6 +94,7 @@ function draw_menu()
     3,
     colors.purple)
 
+  debug.log("Iterating menu options")
   -- Draw the main menu
   for i, option in ipairs(data.menu) do
     -- calculate which line to draw on
@@ -144,7 +149,7 @@ function setBackgroundColor(color)
   end
 end
 
-function setCursorPos(x,y)
+function setCursorPos(x, y)
   if termMode then
     term.setCursorPos(x, y)
   else
@@ -161,6 +166,7 @@ function write(message)
 end
 
 function startupSplash()
+  debug.log("drawing splash")
   clear()
 
   centerPrint(
@@ -172,21 +178,20 @@ function startupSplash()
     "Loading OS...",
     5,
     colors.purple)
-  
-    if termMode then
-      centerPrint(
-        "Terminal Mode",
-        7,
-        colors.orange)
-    else
-      centerPrint(
-        "Monitor Mode",
-        7,
-        colors.orange)
-    end
+
+  if termMode then
+    centerPrint(
+      "Terminal Mode",
+      7,
+      colors.orange)
+  else
+    centerPrint(
+      "Monitor Mode",
+      7,
+      colors.orange)
+  end
 
   loadingBar(9, colors.blue, 2)
-
 
   clear()
 end
@@ -197,29 +202,29 @@ function log(message)
 end
 
 function wait_for_input()
-  print("listening for input")
-	-- Event loop
-	while true do
-		-- get event data
-      local e, side, cx, cy = os.pullEvent("monitor_touch")
-      -- check for valid clicks
-      for i, ci in ipairs(clickIndexes) do
-        -- we check if the line number clicked relates to an entry in the click index
-        -- and if it does we execute it's function
-        -- then we re-draw the menu with the new data
-        if (cy == ci["line"]) then
-          print(data.menu[ci["index"]].title)
-          -- print("new state: " .. sayStatus(data.menu[ci["index"]].func()) .. data.menu[ci["index"]].func())
-          local new_state = data.menu[ci["index"]].func()
-          data.menu[ci["index"]].state = new_state
-          print("new state: " .. data.menu[ci["index"]].state)
-          draw_menu()
-        end
-        if cy == height then
-          os.reboot()
-        end
+  debug.log("listening for input")
+  -- Event loop
+  while true do
+    -- get event data
+    local e, side, cx, cy = os.pullEvent(
+      termMode and "mouse_click" or "monitor_touch"
+    )
+    -- check for valid clicks
+    for i, ci in ipairs(clickIndexes) do
+      -- we check if the line number clicked relates to an entry in the click index
+      -- and if it does we execute it's function
+      -- then we re-draw the menu with the new data
+      if (cy == ci["line"]) then
+        debug.log(data.menu[ci["index"]].title)
+        local new_status = data.menu[ci["index"]].func()
+        data.menu[ci["index"]].state = new_status
+        draw_menu()
+      end
+      if cy == height then
+        os.reboot()
       end
     end
+  end
 end
 
 function draw_taskbar()
