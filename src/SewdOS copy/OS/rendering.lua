@@ -1,9 +1,10 @@
 local debug = require("SewdOS.OS.debug")
 
-debug.log("start rendering...")
+debug.log("init rendering module...")
 
 debug.log("request menu data")
 local data = require("SewdOS.OS.data")
+debug.log("got menu data")
 
 -- periphemu.create("rightw", "monitor")
 
@@ -73,7 +74,7 @@ local function loadingBar(line, color, time)
 end
 
 function draw_menu()
-  debug.log("starting menu draw")
+  debug.log("Drawing Menu")
   -- reset counting vars for menu redraw
   if (menuDrawn) then
     menuStartLine = 6
@@ -225,6 +226,7 @@ function wait_for_input()
       end
     end
   end
+  draw_menu()
 end
 
 function draw_taskbar()

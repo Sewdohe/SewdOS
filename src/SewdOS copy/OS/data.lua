@@ -1,9 +1,4 @@
--- local garage = require("SewdOS.garage")
--- local airport = require("SewdOS.airport")
--- local frontGate = require("SewdOS.FrontGate")
-
-local modem = peripheral.find("modem")
-local devices = require("SewdOS.OS.device")
+local devices = require("SewdOS.OS.devices")
 
 local garage = devices.createDevice(70, 80, "Garage")
 local airport = devices.createDevice(10, 80, "Airport")
@@ -11,11 +6,13 @@ local front_gate = devices.createDevice(15, 80, "FrontGate")
 local front_door = devices.createDevice(20, 80, "FrontDoor")
 local study_door = devices.createDevice(25, 80, "StudyDoor")
 
+print("Building main menu from devices...")
+
 local menu = {
   { 
-	  title = "Garage: ",
-	  func = garage.toggle,
-	  state = garage.getState()
+    title = "Garage: ",
+    func = garage.toggle,
+    state = garage.getState()
   },
   { 
 	  title = "Airport Gate: ",
@@ -38,6 +35,8 @@ local menu = {
 	state = study_door.getState()
  }
 }
+
+print("Menu build done \n")
 
 return {
   menu = menu
